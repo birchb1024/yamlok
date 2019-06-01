@@ -1,0 +1,11 @@
+#Line 0
+- foo: : # Line 1 1
+  bar:
+    - one
+    - two
+    - three
+- foo: 2
+  bar:
+    - one1
+    - two2
+    - three3
