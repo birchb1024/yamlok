@@ -61,7 +61,6 @@ func check_file(input io.Reader, emit func(string)) (err error) {
 		emit(string(yamldata))
 		emit("...\n")
 	}
-	return nil
 }
 
 func makeBooleanFlag(flagVar *bool, swich string, desc string) {
@@ -69,9 +68,11 @@ func makeBooleanFlag(flagVar *bool, swich string, desc string) {
 	flag.BoolVar(flagVar, string(swich[0]), false, desc)
 }
 
-
-func helpText() {
-usage := `
+func helpText(out io.Writer, do_or_not_do bool) {
+	if !do_or_not_do {
+		return
+	}
+	usage := `
 
 yamlok takes a list of YAML files as arguments. It parses each file in turn. If an error is found,
 processing stops and details are printed on stderr. If all the files are ok the process status is zero
@@ -83,25 +84,22 @@ If the --echo option is given, the YAML is also regenerated and sent to stdout.
 
 yamlok uses the Go language YAML parser "gopkg.in/yaml.v3".
 `
-			fmt.Fprintln(os.Stderr, "Simple program to validate YAML files.\n\nusage:\n\n   yamlok [-h|--help] [-e|--echo] [File...]\n")
-			flag.PrintDefaults()
-			fmt.Fprintln(os.Stderr, usage)
-	
+	fmt.Fprint(out, "Simple program to validate YAML files.\n\nusage:\n\n   yamlok [-h|--help] [-e|--echo] [File...]\n\n")
+	flag.CommandLine.SetOutput(out)
+	flag.PrintDefaults()
+	flag.CommandLine.SetOutput(nil)
+	fmt.Fprintln(out, usage)
 }
 func main() {
-
 
 	var echo, help bool
 
 	makeBooleanFlag(&echo, "echo", "Output the parsed YAML to stdout.")
 	makeBooleanFlag(&help, "help", "Print helpful text.")
-	 
+
 	flag.Parse()
 
-	if help {
-		helpText()
-		return
-	}
+	helpText(os.Stderr, help)
 
 	err := yaml_check(flag.Args(), echo, os.Stdout)
 	if err != nil {
