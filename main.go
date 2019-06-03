@@ -80,6 +80,8 @@ otherwise non zero.
 If no input files are given yamlok reads YAML from the standard input. 
 
 If the --echo option is given, the YAML is also regenerated and sent to stdout. 
+
+yamlok uses the Go language YAML parser "gopkg.in/yaml.v3".
 `
 			fmt.Fprintln(os.Stderr, "Simple program to validate YAML files.\n\nusage:\n\n   yamlok [-h|--help] [-e|--echo] [File...]\n")
 			flag.PrintDefaults()
